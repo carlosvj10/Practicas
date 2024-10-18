@@ -1,0 +1,102 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f5f5dc; /* Beige oscuro */
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  padding: 20px;
+  background: url("imagenes/fondo.png") no-repeat center center;
+  text-align: center;
+  padding: 20px;
+  color: white;
+}
+
+h1 {
+  margin: 0;
+}
+
+h2 {
+  margin: 0;
+  font-weight: normal;
+}
+
+main {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+}
+
+.contenedor {
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.I {
+  width: 60%;
+  background-color: #fff;
+  margin-right: 3px;
+}
+
+.D {
+  width: 40%;
+  background-color: #fff;
+}
+
+h3 {
+  margin-top: 0;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  margin-top: 10px;
+}
+
+input {
+  margin-bottom: 10px;
+}
+
+.operacion {
+  margin: 15px 0;
+  text-align: center;
+}
+
+button {
+  background-color: #5b4eb0;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.nuevoVuelo {
+  width: auto;
+  align-self: flex-start; /* Para que el botón de registro deje de ser flex y ocupe todo el ancho */
+  background-color: brown;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+.resultado {
+  display: inline-block;
+  margin-left: 10px;
+  vertical-align: middle;
+}
+
+.resultados {
+  padding: 15px;
+  background-color: #e7f7fe; /* Azul claro */
+  margin-top: 20px;
+}
+
+#resultadoTexto {
+  margin: 0;
+}

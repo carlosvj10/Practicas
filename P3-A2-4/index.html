@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="estilos.css" />
+    <script src="js/vuelos.js"></script>
+    <script src="js/tripulantes.js"></script>
+    <title>Análisis de vuelos</title>
+  </head>
+  <body>
+    <header>
+      <h1>Análisis de vuelos</h1>
+      <h2>Estudio de los costes de operación y asignación de tripulación</h2>
+    </header>
+    <main>
+      <div class="contenedor I">
+        <h3>Alta de vuelo</h3>
+        <form id="formAltaVuelo">
+          <label for="codigoVuelo">Código de vuelo:</label>
+          <input type="text" id="codigoVuelo" required /><br />
+
+          <label for="distancia">Distancia (km):</label>
+          <input type="number" id="distancia" required /><br />
+
+          <label for="mtow">MTOW (kg):</label>
+          <input type="number" id="mtow" required /><br />
+
+          <label for="mfc">MFC (litros):</label>
+          <input type="number" id="mfc" required /><br />
+
+          <label for="nCabina">Tripulantes Cabina:</label>
+          <input type="number" id="nCabina" required /><br />
+
+          <label for="nVuelo">Tripulantes Vuelo:</label>
+          <input type="number" id="nVuelo" required /><br />
+
+          <button type="submit" class="nuevoVuelo">Registrar vuelo</button>
+        </form>
+      </div>
+      <div class="contenedor D">
+        <h3>Acciones</h3>
+        <div class="operacion">
+          <button onclick="interfazOrdenarPorDistancia()">
+            Ordenar por distancia
+          </button>
+          <div class="resultado"></div>
+        </div>
+        <div class="operacion">
+          <button onclick="interfazAsignarTripulantes()">
+            Asignación de tripulación
+          </button>
+          <div class="resultado"></div>
+        </div>
+        <div class="operacion">
+          <button onclick="interfazCalcularCosteOperacion()">
+            Estimación de coste
+          </button>
+          <div class="resultado"></div>
+        </div>
+        <div class="operacion">
+          <button onclick="interfazConsultarTripulantes()">
+            Consultar tripulantes
+          </button>
+          <div class="resultado"></div>
+        </div>
+        <div class="operacion">
+          <button onclick="borrarResultados()">Borrar resultados</button>
+        </div>
+      </div>
+    </main>
+    <div class="resultados" id="resultados">
+      <h3>Resultados</h3>
+      <p id="resultadoTexto"></p>
+      <div id="resultadoHTML"></div>
+    </div>
+
+    <script src="js/gestion.js"></script>
+  </body>
+</html>

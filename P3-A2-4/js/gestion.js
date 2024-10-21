@@ -62,68 +62,69 @@ function ordenarVuelosPorDistancia() {
 // 10 si se han asignado correctamente (código de éxito)
 
 var tripulantesAsignados = []; // vector de tripulantes asignados hasta el momento al vuelo actual
-var flag_noVuelo ;
-var dist ;
-var n_trip_cab ;
-var flag_dist_larga ;
-
 function asignarTripulantes(codigoVuelo) {
   // Codifique aquí !!!!
   // Buscar el vuelo por su código - recorrer vector vuelos. Si no encuentra el vuelo devolver código 1
-  for (const i in vuelos){
-    for (const j of i){
-      if(codigoVuelo == i.codigo){
-        flag_noVuelo = 1;
-        dist = i.distancia ;
-        n_trip_cab = i.nTripulantesCabina ;
-        if (dist > 3000) {
-          flag_dist_larga = 1 ;
+    var vuelo = null;
+    for (let i in vuelos) {  // recorremos el vector de vuelos
+        if (codigoVuelo === vuelos[i].codigo) {   // === compara valor y tipo
+            vuelo = vuelos[i];
+            break; // Salimos bucle si se encuentra
         }
-      } 
     }
-  }
-
-  if (flag_noVuelo != 1) {
-    return 1;
-  }
-  var capitan = buscarTripulante("CAPT") ;
-  var primer_oficial = buscarTripulante("FO") ;
-  var segundo_oficial ;
-  
-  if(capitan){
-    tripulantesAsignados.append(capitan) ;
-  }
-  else {
-    return 2 ;
-  }
-  if(primer_oficial){
-    tripulantesAsignados.append(primer_oficial) ;
-  }
-  else {
-    return 3 ;
-  }
-  if (flag_dist_larga == 1){
-    segundo_oficial = buscarTripulante("SO") ;
-    if(segundo_oficial){
-      tripulantesAsignados.append(segundo_oficial) ;
+    if (!vuelo) {
+        return 1; // Código 1: vuelo no encontrado
     }
-    else{
-      return 4 ;
+
+    var tripulantesAsignados = [] ;
+    // Cada vuelo tiene asignado una distancia y un número de tripulantes
+    var {distancia, nTripulantesCabina} = vuelo;
+    // Larga distancia si distancia es > 3000 km
+    var largaDistancia = distancia > 3000;
+
+    // Asignamos capitán al vuelo usando la función buscarTripulante
+    var capitan = buscarTripulante("CAPT");
+    if (!capitan){
+        return 2 ;    // Código 2: CAPT no disponible
+    } else {
+        tripulantesAsignados.push(capitan) ;
     }
-  }
 
-  var tripulantes_cabina ;
-  for (n_trip_cab; n_trip_cab>0;n_trip_cab--){
-    tripulantes_cabina = buscarTripulante("FA") ;
-    
+    // Asignamos primer oficial al vuelo usando la función buscarTripulante
+    var primerOficial = buscarTripulante("FO");
+    if (!primerOficial){
+        return 3 ;    // Código 3: FO no disponible
+    } else {
+        tripulantesAsignados.push(primerOficial) ;
+    }
 
-  }
+    // Asignamos segundo oficial al vuelo si es de larga distancia
+    if (largaDistancia){
+        var segundoOficial = buscarTripulante("SO");
+        if (!segundoOficial){
+            return 4 ;    // Código 4: SO no disponible
+        } else {
+            tripulantesAsignados.push(segundoOficial) ;
+        }
+    }
 
+    // Asignamos FAs al vuelo
+    for (let i = 0; i < nTripulantesCabina; i++){
+        var fa = buscarTripulante("FA");
+        if (!fa){
+            return 5 ;    // Código 5: No suficientes FAs disponibles
+        } else {
+            tripulantesAsignados.push(fa) ;
+        }
+    }
 
- 
+    // Si llegamos aquí es que se han asignado correctamente los tripulantes
+    vuelosAsignados.push({
+        codigoVuelo: codigoVuelo,
+        tripulantes: tripulantesAsignados.map(t => t.id)
+    });
 
-
-  }
+}
   // Asignar tripulación
   /* En vuelos de corta o media distancia 1CAPT + 1FO + nFA:
       - Buscar un CAPT usando la función 'buscarTripulante("CAPT")'
@@ -142,8 +143,6 @@ function asignarTripulantes(codigoVuelo) {
       - Si la asignación se ha completado, devolver código de éxito
     */
 
-var tripulante ;
-var tripulante_n = [] ;
 function buscarTripulante(cargo) {
   // Codifique aquí !!!!
   /* Recorrer vector 'tripulantes'
@@ -151,14 +150,24 @@ function buscarTripulante(cargo) {
      - Seleccionarlo sólo si no ha sido ya seleccionado como tripulante del vuelo
      - Devolver el tripulante seleccionado o nada si no existe un tripulante que cumpla los criterios
      */
-  for (let i in tripulantes){
-    for (let j of i){
-      if(cargo == i.cargo){
-        tripulante = i.j ;
-        return tripulante_n.append(tripulante) ;
-      }
+  for (let tripulante of tripulantes){
+    // Debe tener la etiqueta !comDisciplina
+    if (tripulante.cargo === cargo && !tripulante.comDisciplina) {
+            // Verificar si ha sido previamente asignado
+            let yaAsignado = false;
+            for (let vuelo of vuelosAsignados) {
+                if (vuelo.tripulantes.includes(tripulante.id)) {
+                    yaAsignado = true;
+                    break;
+                }
+            }
+            // Si no está asignado, devolver el tripulante
+            if (!yaAsignado) {
+                return tripulante;
+            }
     }
   }
+  return null ;
 
 }
 
@@ -216,31 +225,34 @@ function interfazOrdenarPorDistancia() {
 function interfazAsignarTripulantes() {
   var codigoVuelo = prompt("Introduce el código de vuelo:");
   var resultado = asignarTripulantes(codigoVuelo);
+  var mensaje;
 
   // Implemente la comprobación del resultado devuelto y genere el 'texto' de salida apropiado
   // Codifique aquí !!!!
   switch(resultado) {
-    case 1: 
-      print('Vuelo no encontrado (${codigoVuelo} no registrado en el sistema)');
-      break;
-    case 2:
-      print('CAPT no disponible para el vuelo ${codigoVuelo}');
-      break;
-    case 3:
-      print('FO no disponible para el vuelo ${codigoVuelo}');
-      break;
-    case 4:
-      print('SO no disponible para el vuelo ${codigoVuelo}');
-      break;
-    case 5:
-      print('No hay suficiente FA disponibles para el vuelo ${codigoVuelo}');
-      break;
-    case 10:
-      print('Tripulación asignada directamente al vuelo ${codigoVuelo}');
-      break;
-  }
+    case 1:
+            mensaje = `Vuelo no encontrado (el vuelo ${codigoVuelo} no está registrado en el sistema)`;
+            break;
+        case 2:
+            mensaje = `CAPT no disponible para el vuelo ${codigoVuelo}`;
+            break;
+        case 3:
+            mensaje = `FO no disponible para el vuelo ${codigoVuelo}`;
+            break;
+        case 4:
+            mensaje = `SO no disponible para el vuelo ${codigoVuelo}`;
+            break;
+        case 5:
+            mensaje = `No hay suficientes FA disponibles para el vuelo ${codigoVuelo}`;
+            break;
+        case 10:
+            mensaje = `Tripulación asignada correctamente al vuelo ${codigoVuelo}`;
+            break;
+        default:
+            mensaje = "Error desconocido";
+    }
 
-  mostrarResultado(codigo);
+  mostrarResultado(mensaje);
 }
 
 function interfazCalcularCosteOperacion() {

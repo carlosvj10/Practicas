@@ -108,28 +108,48 @@ function asignarTripulantes(codigoVuelo) {
         }
     }
 
-    // Asignamos FAs al vuelo
     for (let i = 0; i < nTripulantesCabina; i++){
+      var fa = buscarTripulante("FA");
+      if (!fa){
+          return 5 ;    // Código 5: No suficientes FAs disponibles
+      } else {
+          tripulantesAsignados.push(fa) ;
+      }
+    }
+
+
+
+    // Asignamos FAs al vuelo
+    /*for (let i = 0; i < nTripulantesCabina; i++){
         var fa = buscarTripulante("FA");
         if (!fa){
             return 5 ;    // Código 5: No suficientes FAs disponibles
         } else {
             tripulantesAsignados.push(fa) ;
         }
-    }
+    }*/
 
     // Si llegamos aquí es que se han asignado correctamente los tripulantes
     vuelosAsignados.push({
         codigoVuelo: codigoVuelo,
         tripulantes: tripulantesAsignados.map(t => t.id)
     });
+    for (let vuelo of vuelosAsignados) {
+      // Imprimimos el código del vuelo y los tripulantes para verificar la estructura
+      console.log(`Código del vuelo: ${vuelo.codigoVuelo}`);
+      console.log(`Tripulantes del vuelo: ${vuelo.tripulantes}`);
+    }
+    console.log(tripulantesAsignados);
+
+
+    return 10;
 
 }
   // Asignar tripulación
   /* En vuelos de corta o media distancia 1CAPT + 1FO + nFA:
       - Buscar un CAPT usando la función 'buscarTripulante("CAPT")'
          x Si no lo encuentra devuelva código apropiado (2 en este caso)
-         x Si lo encuentra almacenarlo en vector 'tripulantesAsignados' 
+         x Si lo encuentra almacenarlo en vector 'tripulantesAsignados'
       - Buscar resto (FO y FAs)
          x etc.
       - Si la asignación se ha completado, devolver código de éxito
@@ -137,39 +157,42 @@ function asignarTripulantes(codigoVuelo) {
   /* En vuelos de larga distancia 1CAPT + 1FO + 1SO + nFA:
       - Buscar un CAPT usando la función 'buscarTripulante("CAPT")'
          x Si no lo encuentra devuelva código apropiado (2 en este caso)
-         x Si lo encuentra almacenarlo en vector 'tripulantesAsignados' 
+         x Si lo encuentra almacenarlo en vector 'tripulantesAsignados'
       - Buscar resto (FO, SO y FAs)
          x etc.
       - Si la asignación se ha completado, devolver código de éxito
     */
 
 function buscarTripulante(cargo) {
-  // Codifique aquí !!!!
-  /* Recorrer vector 'tripulantes'
-     - Comprobar si el tripulante actual tiene el cargo indicado en 'cargo'
-     - Seleccionarlo sólo si no ha sido ya seleccionado como tripulante del vuelo
-     - Devolver el tripulante seleccionado o nada si no existe un tripulante que cumpla los criterios
-     */
-  for (let tripulante of tripulantes){
-    // Debe tener la etiqueta !comDisciplina
+  console.log('Cargo buscado:', cargo);
+
+  for (let tripulante of tripulantes) {
+    let yaAsignado = false;
+
     if (tripulante.cargo === cargo && !tripulante.comDisciplina) {
-            // Verificar si ha sido previamente asignado
-            let yaAsignado = false;
-            for (let vuelo of vuelosAsignados) {
-                if (vuelo.tripulantes.includes(tripulante.id)) {
-                    yaAsignado = true;
-                    break;
-                }
-            }
-            // Si no está asignado, devolver el tripulante
-            if (!yaAsignado) {
-                return tripulante;
-            }
+      console.log(`Verificando tripulante con ID: ${tripulante.id}`);
+      console.log(tripulantesAsignados);
+
+
+
+      if (tripulantesAsignados.includes(tripulante.id)) {
+        yaAsignado = true;
+        console.log(`Tripulante con ID: ${tripulante.id} ya está asignado al vuelo ${vuelo.codigoVuelo}`);
+        break;
+      }
+
+
+      if (!yaAsignado) {
+        console.log(`Tripulante con ID: ${tripulante.id} no está asignado a ningún vuelo.`);
+        return tripulante;
+      }
     }
   }
-  return null ;
 
+  console.log("No se encontró ningún tripulante disponible.");
+  return null;
 }
+
 
 function calcularCosteOperacion(codigoVuelo, precioCombustiblePorLitro) {
   var vuelo = null;
@@ -199,6 +222,22 @@ function calcularCosteOperacion(codigoVuelo, precioCombustiblePorLitro) {
 // Devuelve un array de tripulantes o un código 1 (indica 'no hay tripulantes asignados')
 
 function consultarTripulantes(codigoVuelo) {
+  var vuelo;
+  var trip;
+  console.log(vuelosAsignados)
+  for (let i in vuelosAsignados) {  // recorremos el vector de vuelos
+    if (codigoVuelo === vuelosAsignados[i].codigoVuelo) {   // === compara valor y tipo
+        vuelo = vuelosAsignados[i];
+        trip = vuelosAsignados[i].tripulantes;
+        break; // Salimos bucle si se encuentra
+    }
+  }
+  if (!vuelo) {
+    return 1; // Código 1: vuelo no encontrado
+  }
+  else{
+    return trip;}
+
   // Codifique aquí !!!!
 }
 
@@ -227,6 +266,7 @@ function interfazAsignarTripulantes() {
   var resultado = asignarTripulantes(codigoVuelo);
   var mensaje;
 
+
   // Implemente la comprobación del resultado devuelto y genere el 'texto' de salida apropiado
   // Codifique aquí !!!!
   switch(resultado) {
@@ -248,8 +288,8 @@ function interfazAsignarTripulantes() {
         case 10:
             mensaje = `Tripulación asignada correctamente al vuelo ${codigoVuelo}`;
             break;
-        default:
-            mensaje = "Error desconocido";
+        //default:
+            //mensaje = "Error desconocido";
     }
 
   mostrarResultado(mensaje);
@@ -263,10 +303,24 @@ function interfazCalcularCosteOperacion() {
 }
 
 function interfazConsultarTripulantes() {
-  // Codifique aquí !!!!
+  var codigoVuelo = prompt("Introduce el código de vuelo:");
+  var resultado = consultarTripulantes(codigoVuelo);
+  var mensaje;
 
-  // Finalmente se genera el 'texto' de salida
-  mostrarResultado(texto);
+  if(resultado==1){
+    mensaje = `Vuelo no encontrado (el vuelo ${codigoVuelo} no está registrado en el sistema)`;
+
+  }
+  else{
+    mensaje = `Tripulantes del vuelo ${codigoVuelo}: ${resultado} `;
+
+  }
+
+
+
+
+  mostrarResultado(mensaje);
+
 }
 
 // Función para mostrar el resultado (ya implementada)

@@ -164,33 +164,31 @@ function asignarTripulantes(codigoVuelo) {
     */
 
 function buscarTripulante(cargo) {
-  console.log('Cargo buscado:', cargo);
+    console.log('Cargo buscado:', cargo);
 
-  for (let tripulante of tripulantes) {
-    let yaAsignado = false;
+    for (let tripulante of tripulantes) {
+        // Solo buscamos tripulantes con el cargo deseado y sin problemas de disciplina.
+        if (tripulante.cargo === cargo && !tripulante.comDisciplina) {
+            console.log(`Verificando tripulante con ID: ${tripulante.id}`);
+            console.log('Tripulantes asignados:', tripulantesAsignados);
 
-    if (tripulante.cargo === cargo && !tripulante.comDisciplina) {
-      console.log(`Verificando tripulante con ID: ${tripulante.id}`);
-      console.log(tripulantesAsignados);
+            // Verificar si el tripulante ya está asignado al vuelo.
+            if (!tripulantesAsignados.includes(tripulante.id)) {
+                console.log(`Tripulante con ID: ${tripulante.id} no está asignado a ningún vuelo.`);
 
+                // Agregar el tripulante a la lista de asignados.
+                tripulantesAsignados.push(tripulante.id);
 
-
-      if (tripulantesAsignados.includes(tripulante.id)) {
-        yaAsignado = true;
-        console.log(`Tripulante con ID: ${tripulante.id} ya está asignado al vuelo ${vuelo.codigoVuelo}`);
-        break;
-      }
-
-
-      if (!yaAsignado) {
-        console.log(`Tripulante con ID: ${tripulante.id} no está asignado a ningún vuelo.`);
-        return tripulante;
-      }
+                // Retornar el tripulante encontrado.
+                return tripulante;
+            } else {
+                console.log(`Tripulante con ID: ${tripulante.id} ya está asignado a otro vuelo.`);
+            }
+        }
     }
-  }
 
-  console.log("No se encontró ningún tripulante disponible.");
-  return null;
+    console.log("No se encontró ningún tripulante disponible.");
+    return null;
 }
 
 
@@ -228,7 +226,7 @@ function consultarTripulantes(codigoVuelo) {
   for (let i in vuelosAsignados) {  // recorremos el vector de vuelos
     if (codigoVuelo === vuelosAsignados[i].codigoVuelo) {   // === compara valor y tipo
         vuelo = vuelosAsignados[i];
-        trip = vuelosAsignados[i].tripulantes;
+        trip = vuelo.tripulantes;
         break; // Salimos bucle si se encuentra
     }
   }

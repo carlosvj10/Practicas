@@ -76,7 +76,6 @@ function asignarTripulantes(codigoVuelo) {
         return 1; // Código 1: vuelo no encontrado
     }
 
-    var tripulantesAsignados = [] ;
     // Cada vuelo tiene asignado una distancia y un número de tripulantes
     var {distancia, nTripulantesCabina} = vuelo;
     // Larga distancia si distancia es > 3000 km

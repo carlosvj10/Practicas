@@ -4,7 +4,13 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-
+     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+    <!-- Make sure you put this AFTER Leaflet's CSS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
     <title>Mapa de la ISS</title>
 
     <!-- Ir a leftlet.js a quickstart guide y copiar primero el fichero CSS asociado para
@@ -16,10 +22,42 @@
   </head>
   <body>
     <!-- Contenedor para el mapa -->
+    <div id="map" style="height: 180px;></div>
+
+    <!-- Definir dos elementos de tipo Span para posteriormente mostrar latitud y longitud-->
+    <span id="lat"></span>
+    <span id="lon"></span>
+
 
     <script>
-      // Cree el mapa usando la librería Leaflet que ha importado
+      // Cree el mapa usando la librería Leaflet que ha importado con la función (map)
       // Debe pasar como parámetros la latitud, longitud y nivel de zoom
+      // Toma com valor el id de la zona de visualización del contenedor div que albergará el mapa.
+      // Mediante la implementación de la función 'map' :
+      const elMapa = L.map('map').setView([0, 0], 1); // Centro inicial en [0, 0] con zoom 1.
+
+      // 2. Atribución de licencia y URL de descarga de azulejos de OpenStreetMap.
+      const tileURL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+      const textoLicencia = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+
+      // 3. Construcción del mapa de OpenStreetMap a base de azulejos.
+      const capaAzulejos = L.tileLayer(tileURL, {
+        textoLicencia
+      });
+      capaAzulejos.addTo(elMapa);
+
+      // 4. Crear un icono personalizado para el marcador de la ISS.
+      const simbolo = L.icon({
+        iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/d/d0/International_Space_Station.svg', // URL del icono.
+        iconSize: [50, 32], // Tamaño del icono.
+        iconAnchor: [25, 16] // Punto del icono que corresponde a la ubicación exacta.
+      });
+
+      // 5. Crear la marca en la posición inicial [0, 0] usando el icono personalizado.
+      const marca = L.marker([0, 0], { icon: simbolo }).addTo(elMapa);
+
+
+
 
       // Descargue los azulejos para construir el mapa de Open Street Maps
       // (incluya la atribución de licencia)
@@ -32,15 +70,33 @@
 
       // Construya la URL del servicio de posicionamiento de la ISS
 
+
+      const url = "https://api.wheretheiss.at/v1/satellites/25544";
       async function obtenISS() {
+        const respuesta = await fetch(url);
+
+        // Verificar si la respuesta es exitosa
+        if (respuesta.ok) {
+            const datos = await respuesta.json();
+
+            console.log("Posición actual de la ISS:");
+
+            console.log(datos)
+        } else {
+            console.log("Error en la solicitud:", respuesta.status);
+        }
+
         // Invoque el servicio web de posicionamiento para obtener las coordenadas actuales de la ISS
         // Extraiga la latitud y longitud de los datos devueltos
+
         // Actualizar las coordenadas de posicionamiento (latitud y longitud) de la marca
         // En la primera ejecución debe centrar el mapa en las coordenadas que recibe del servicio web
         // Si no, es posible que no vea la marca en movimiento
       }
 
       // Invocar obtenISS() periodicamente, cada 1,5 segundos
+      setInterval(obtenISS, 1500); // en milisenguns
+
     </script>
   </body>
 </html>

@@ -41,9 +41,7 @@
 
       // 3. Construcción del mapa de OpenStreetMap a base de azulejos.
       const capaAzulejos = L.tileLayer(tileURL, {
-        attribution: textoLicencia,
-        noWrap: true, // Evitar la repetición de azulejos
-        maxZoom: 19 // Establecer un zoom máximo
+        attribution: textoLicencia
       });
       capaAzulejos.addTo(elMapa);
 
@@ -82,31 +80,28 @@
       async function obtenISS() {
         const respuesta = await fetch(url);
 
-        // Verificar si la respuesta es exitosa
-        if (respuesta.ok) {
-          const datos = await respuesta.json();
+          // Verificar si la respuesta es exitosa.
+          if (respuesta.ok) {
+            const datos = await respuesta.json();
 
-          // Extraer la latitud y longitud de los datos devueltos
-          const latitud = datos.latitude;
-          const longitud = datos.longitude;
+            // Extraer la latitud y longitud de los datos devueltos.
+            const latitud = datos.latitude;
+            const longitud = datos.longitude;
 
-          // Mostrar la latitud y longitud en los elementos span
-          document.getElementById('lat').textContent = latitud.toFixed(5);
-          document.getElementById('lon').textContent = longitud.toFixed(5);
+            // Mostrar la latitud y longitud en los elementos span.
+            document.getElementById('lat').textContent = latitud.toFixed(5);
+            document.getElementById('lon').textContent = longitud.toFixed(5);
 
-          // Actualizar las coordenadas de posicionamiento de la marca
-          marca.setLatLng([latitud, longitud]);
+            // Actualizar las coordenadas de posicionamiento de la marca.
+            marca.setLatLng([latitud, longitud]);
 
-          // Solo centrar el mapa si la posición ha cambiado
-          const currentLatLng = marca.getLatLng();
-          if (latitud !== currentLatLng.lat || longitud !== currentLatLng.lng) {
+            // Centrar el mapa en las coordenadas de la ISS solo si está lejos de la vista actual.
             elMapa.setView([latitud, longitud], elMapa.getZoom());
-          }
 
-          console.log(`Latitud: ${latitud}, Longitud: ${longitud}`);
-        } else {
-          console.error("Error en la solicitud:", respuesta.status);
-        }
+            console.log(datos);
+          } else {
+            console.error("Error en la solicitud:", respuesta.status);
+          }
 
         // Invoque el servicio web de posicionamiento para obtener las coordenadas actuales de la ISS
         // Extraiga la latitud y longitud de los datos devueltos

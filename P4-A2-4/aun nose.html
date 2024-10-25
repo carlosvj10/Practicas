@@ -21,12 +21,11 @@
     <!-- Estilos para el contenedor div que albergará el mapa (alto a 180 píxeles y tod el ancho posible) -->
   </head>
   <body>
-    <!-- Contenedor para el mapa -->
-    <div id="map" style="height: 180px;></div>
 
-    <!-- Definir dos elementos de tipo Span para posteriormente mostrar latitud y longitud-->
-    <span id="lat"></span>
-    <span id="lon"></span>
+    <p>Latitud: <span id="lat"></span> º</p>
+    <p>Longitud: <span id="lon"></span> º</p>
+    <!-- Contenedor para el mapa -->
+    <div id="map" style="height: 180px;"></div>
 
 
     <script>
@@ -42,7 +41,9 @@
 
       // 3. Construcción del mapa de OpenStreetMap a base de azulejos.
       const capaAzulejos = L.tileLayer(tileURL, {
-        textoLicencia
+        attribution: textoLicencia,
+        noWrap: true, // Evitar la repetición de azulejos
+        maxZoom: 19 // Establecer un zoom máximo
       });
       capaAzulejos.addTo(elMapa);
 
@@ -56,6 +57,12 @@
       // 5. Crear la marca en la posición inicial [0, 0] usando el icono personalizado.
       const marca = L.marker([0, 0], { icon: simbolo }).addTo(elMapa);
 
+      // Establecer límites del mapa
+      const bounds = L.latLngBounds([
+        [-60, -170], // Suroeste
+        [85, 170] // Noreste
+      ]);
+      elMapa.fitBounds(bounds); // Ajustar el mapa a los límites especificados
 
 
 
@@ -77,13 +84,28 @@
 
         // Verificar si la respuesta es exitosa
         if (respuesta.ok) {
-            const datos = await respuesta.json();
+          const datos = await respuesta.json();
 
-            console.log("Posición actual de la ISS:");
+          // Extraer la latitud y longitud de los datos devueltos
+          const latitud = datos.latitude;
+          const longitud = datos.longitude;
 
-            console.log(datos)
+          // Mostrar la latitud y longitud en los elementos span
+          document.getElementById('lat').textContent = latitud.toFixed(5);
+          document.getElementById('lon').textContent = longitud.toFixed(5);
+
+          // Actualizar las coordenadas de posicionamiento de la marca
+          marca.setLatLng([latitud, longitud]);
+
+          // Solo centrar el mapa si la posición ha cambiado
+          const currentLatLng = marca.getLatLng();
+          if (latitud !== currentLatLng.lat || longitud !== currentLatLng.lng) {
+            elMapa.setView([latitud, longitud], elMapa.getZoom());
+          }
+
+          console.log(`Latitud: ${latitud}, Longitud: ${longitud}`);
         } else {
-            console.log("Error en la solicitud:", respuesta.status);
+          console.error("Error en la solicitud:", respuesta.status);
         }
 
         // Invoque el servicio web de posicionamiento para obtener las coordenadas actuales de la ISS

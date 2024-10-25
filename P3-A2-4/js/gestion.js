@@ -225,7 +225,7 @@ function consultarTripulantes(codigoVuelo) {
   for (let i in vuelosAsignados) {  // recorremos el vector de vuelos
     if (codigoVuelo === vuelosAsignados[i].codigoVuelo) {   // === compara valor y tipo
         vuelo = vuelosAsignados[i];
-        trip = vuelosAsignados[i].tripulantes;
+        trip = vuelo.tripulantes;
         break; // Salimos bucle si se encuentra
     }
   }

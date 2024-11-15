@@ -5,9 +5,9 @@
     let palos = ["corazones", "picas", "rombos", "treboles"];
       
 	// Array de número de cartas
-	// numeros = ["as", 2, 3, 4, 5, 6, 7, 8, 9, 10, "jota", "reina", "rey"];
+	let numeros = ["as", 2, 3, 4, 5, 6, 7, 8, 9, 10, "jota", "reina", "rey"];
 	// En las pruebas iniciales solo se trabajará con cuatro cartas por palo:
-	let numeros = [10, "jota", "reina", "rey"];
+	// let numeros = [10, "jota", "reina", "rey"];
 
     // paso (top y left) en pixeles de una carta a la anterior en un mazo
     let paso = 3;

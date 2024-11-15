@@ -50,7 +50,7 @@
 
 	// El juego debería comenzar al cargar la página: no se debe esperar a pulsar el botón de Reiniciar
     /* !!!!!!!!!!!!!!!!!!! CÓDIGO !!!!!!!!!!!!!!!!!!!!!!! */
-
+	comenzar_juego();
     /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
 
 
@@ -65,6 +65,9 @@
 		el elemento img, inclúyase como elemento del array mazo_inicial. 
 		*/
 		/* !!!!!!!!!!!!!!!!!!!!!! CÓDIGO !!!!!!!!!!!!!!!!!!!! */
+		// Mazo inicial vacío
+		mazo_inicial = [];
+
 		// Primer bucle for de palos (4)
 		for (let i = 0; i < palos.length; i++) {
 			// Segundo bucle for de números (legth(numeros))

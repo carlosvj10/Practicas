@@ -10,7 +10,7 @@
 	let numeros = [10, "jota", "reina", "rey"];
 
     // paso (top y left) en pixeles de una carta a la anterior en un mazo
-    let paso = 5;
+    let paso = 3;
 
 	// Tapetes				
 	let tapete_inicial   = document.getElementById("inicial");
@@ -251,7 +251,8 @@
 	*/
 	function dec_contador(contador){
 		/* !!!!!!!!!!!!!!!!!!!!!! CODIGO !!!!!!!!!!!!!!!!!!!! */	
-                
+		// Decrementamos el número correspondiente al contenido textual del elemento que actúa de contador
+		contador.innerHTML = +contador.innerHTML - 1;
         /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */	
 	} // dec_contador
 

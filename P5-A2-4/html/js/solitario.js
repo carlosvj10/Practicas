@@ -10,7 +10,7 @@
 	let numeros = [10, "jota", "reina", "rey"];
 
     // paso (top y left) en pixeles de una carta a la anterior en un mazo
-    let paso = 3;
+    let paso = 5;
 
 	// Tapetes				
 	let tapete_inicial   = document.getElementById("inicial");
@@ -64,8 +64,33 @@
 		el path correcto en la URL asociada al atributo src de <img>). Una vez creado
 		el elemento img, inclúyase como elemento del array mazo_inicial. 
 		*/
-		/* !!!!!!!!!!!!!!!!!!!!!! CÓDIGO !!!!!!!!!!!!!!!!!!!! */	
-                
+		/* !!!!!!!!!!!!!!!!!!!!!! CÓDIGO !!!!!!!!!!!!!!!!!!!! */
+		// Primer bucle for de palos (4)
+		for (let i = 0; i < palos.length; i++) {
+			// Segundo bucle for de números (legth(numeros))
+			for (let j = 0; j < numeros.length; j++) {
+				// Creación de la carta
+				let carta = document.createElement("img");
+				//carta.src = "img/baraja/" + numeros[j] + "-" + palos[i] + ".png";
+				// Agregamos source con setAtibute
+				carta.setAttribute("src", "img/baraja/" + numeros[j] + "-" + palos[i] + ".png");
+				carta.setAttribute("id", numeros[j] + "-" + palos[i]);
+				carta.setAttribute("data-nombre",palos[i]);
+
+				// Si la carta es de rombos o corazones, se le añade el atributo de color rojo:
+				if (palos[i] == "corazones" || palos[i] == "rombos") {
+					carta.setAttribute("data-color","rojo");
+				} else {
+					carta.setAttribute("data-color", "negro");
+				}
+
+				// Inclusión de la carta en el mazo inicial
+				mazo_inicial.push(carta);
+			}
+		}
+		// printamos mazo inicial
+		console.log(mazo_inicial);
+
         /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
         
 
@@ -157,7 +182,26 @@
 	*/
 	function barajar(mazo) {
 		/* !!!!!!!!!!!!!!!!!!!!!! CODIGO !!!!!!!!!!!!!!!!!!!! */	
-                
+		// Recorrecmos con un bucle for todos los elementos del array mazo inicial
+		for (let i = 0; i < mazo.length; i++) {
+			// Sea j un indice cuyo valor sea un número aleatorio comprendido entre 0 y la longitud del array menos uno
+			let j = Math.floor( Math.random() * mazo.length );
+			// Se intercambia el contenido de la posición i-ésima con el de la j-ésima
+			// Teniendo en cuenta que no se puede repetir ningún valor, ya que las cartas dentro del mazo son únicas, se hace un intercambio de cartas
+			let aux = mazo[i];
+			mazo[i] = mazo[j];
+			mazo[j] = aux;
+		}
+		console.log(mazo);
+		// Imprime si hay algún elemento coincidnete dentro del mazo:
+		for (let i = 0; i < mazo.length; i++) {
+			for (let j = 0; j < mazo.length; j++) {
+				if (i != j && mazo[i].id == mazo[j].id) {
+					console.log("Elemento repetido: " + mazo[i].id);
+				}
+			}
+		}
+
     	/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
 	} // barajar
 
@@ -171,8 +215,21 @@
 		Al final se debe ajustar el contador de cartas a la cantidad oportuna
 	*/
 	function cargar_tapete_inicial(mazo) {
-		/* !!!!!!!!!!!!!!!!!!!!!! CODIGO !!!!!!!!!!!!!!!!!!!! */	
-                
+		/* !!!!!!!!!!!!!!!!!!!!!! CODIGO !!!!!!!!!!!!!!!!!!!! */
+		// Recorremos el mazo
+		for (let i = 0; i < mazo.length; i++) {
+			// Añadimos la carta al tapete inicial
+			tapete_inicial.appendChild(mazo[i]);
+			// Ajustamos la posición de la carta
+			mazo[i].style.width = "50px";
+			mazo[i].style.position = "absolute";
+			mazo[i].style.left = paso * i + "px";
+			mazo[i].style.top = paso * i + "px";
+		}
+		// Ajustamos el contador de cartas a la cantidad oportuna
+		set_contador(cont_inicial, mazo.length);
+
+
         /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */	
 	} // cargar_tapete_inicial
 
@@ -203,6 +260,7 @@
 	*/
 	function set_contador(contador, valor) {
 		/* !!!!!!!!!!!!!!!!!!!!!! CODIGO !!!!!!!!!!!!!!!!!!!! */	
-                
+		// Ajustamos la cuenta al valor especificado
+		contador.innerHTML = valor;
         /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */	
 		} // set_contador

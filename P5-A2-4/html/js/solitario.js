@@ -5,7 +5,7 @@ let palos = ["corazones", "picas", "rombos", "treboles"];
 
 // Array de número de cartas
 //let numeros = ["as", 2, 3, 4, 5, 6, 7, 8, 9, 10, "jota", "reina", "rey"];
-let numeros = ["as", "jota", "reina", "rey"];
+let numeros = [ "reina", "rey"];
 // Paso (top y left) en píxeles de una carta a la anterior en un mazo
 let paso = 3;
 
@@ -177,43 +177,165 @@ function habilitar_soltar(tapete) {
 // Función para soltar cartas en los tapetes de receptores
 
 function soltar_en_receptor(e, tapete) {
-	e.preventDefault();
-	let cartaId = e.dataTransfer.getData('text');
-	let carta = document.getElementById(cartaId);
+    e.preventDefault();
+    let cartaId = e.dataTransfer.getData('text');
+    let carta = document.getElementById(cartaId);
 
-	// Identificar el tapete de origen (de donde viene la carta)
-	let tapeteOrigen = carta.parentNode; // El tapete de donde estaba la carta
+    // Identificar el tapete de origen (de donde viene la carta)
+    let tapeteOrigen = carta.parentNode;
 
-	// Verificar cuántas cartas ya hay en el tapete y colocarlas una encima de la otra
-	let numeroCartasDestino = tapete.children.length;
+    // Si el tapete de destino es el tapete de sobrantes, no hay restricciones
+    if (tapete === tapete_sobrantes) {
+		if(tapeteOrigen=== tapete_inicial){
+        // Ajustar posición de la carta en el tapete de sobrantes
+        carta.style.position = "absolute";
+        carta.style.top = (tapete.offsetHeight / 2 - carta.offsetHeight / 2) + "px";
+        carta.style.left = (tapete.offsetWidth / 2 - carta.offsetWidth / 2) + "px";
 
-	// Se ajusta la posición para que las cartas se apilen centradas
-	carta.style.position = "absolute";
-	carta.style.top = (tapete.offsetHeight / 2 - carta.offsetHeight / 2)+ "px"; // Apilar las cartas con 20px de separación
-	carta.style.left = (tapete.offsetWidth / 2 - carta.offsetWidth / 2) + "px"; // Centrar la carta
+        // Mover la carta al tapete de sobrantes
+        tapete.appendChild(carta);
 
-	// Mover la carta al tapete de destino
-	tapete.appendChild(carta);
+        // Actualizar los contadores
+        actualizarContadores(tapeteOrigen, tapete);
 
-	// Actualizar el contador de cartas en el tapete de origen (restar 1 carta)
-	actualizarContadores(tapeteOrigen, tapete);
+        // Quitar la carta del mazo de origen y agregarla al mazo de sobrantes
+        let mazoOrigen = obtenerMazoDeTapete(tapeteOrigen);
+        let mazoDestino = obtenerMazoDeTapete(tapete);
+        actualizarMazos(mazoOrigen, mazoDestino, carta);
 
-	// Actualizar el contador de movimientos
-	inc_contador(cont_movimientos);
-	actualizarCartasArrastrables();
+        // Incrementar el contador de movimientos
+        inc_contador(cont_movimientos);
 
-  }
+        // Actualizar las cartas arrastrables
+
+        verificarYReiniciarTapeteInicial();
+		actualizarCartasArrastrables();
+        return;
+    	}
+	}
+
+    // Obtener información de la carta que se intenta mover
+    let valorCarta = carta.getAttribute("id").split("-")[0]; // Obtener el número o nombre (as, jota, etc.)
+    let colorCarta = carta.getAttribute("data-color");
+
+    // Determinar el mazo de origen basado en el tapete de origen
+    let mazoOrigen = obtenerMazoDeTapete(tapeteOrigen);
+    let mazoDestino = obtenerMazoDeTapete(tapete);
+
+    // Obtener la última carta del tapete de destino (si existe)
+    let ultimaCartaDestino = tapete.lastElementChild;
+    if (ultimaCartaDestino) {
+        let valorUltimaCarta = ultimaCartaDestino.getAttribute("id").split("-")[0];
+        let colorUltimaCarta = ultimaCartaDestino.getAttribute("data-color");
+
+        // Verificar si la carta puede ser colocada
+        if (!puedeColocarCarta(valorUltimaCarta, colorUltimaCarta, valorCarta, colorCarta)) {
+            alert("Movimiento inválido. Las cartas deben estar en orden decreciente y alternando colores.");
+            return;
+        }
+    } else {
+        // Si no hay cartas en el receptor, la primera debe ser un Rey
+        if (valorCarta !== "rey") {
+            alert("Movimiento inválido. El receptor debe comenzar con un Rey.");
+            return;
+        }
+    }
+
+    // Ajustar posición de la carta en el receptor
+    carta.style.position = "absolute";
+    carta.style.top = (tapete.offsetHeight / 2 - carta.offsetHeight / 2) + "px";
+    carta.style.left = (tapete.offsetWidth / 2 - carta.offsetWidth / 2) + "px";
+
+    // Mover la carta al tapete de destino
+    tapete.appendChild(carta);
+
+    // Actualizar los contadores
+    actualizarContadores(tapeteOrigen, tapete);
+
+    // Quitar la carta del mazo de origen y agregarla al mazo de destino
+    actualizarMazos(mazoOrigen, mazoDestino, carta);
+
+    // Incrementar el contador de movimientos
+    inc_contador(cont_movimientos);
+
+    // Actualizar las cartas arrastrables
+	verificarYReiniciarTapeteInicial();
+    actualizarCartasArrastrables();
+	finJuego();
+}
+
+// Función para obtener el mazo correspondiente al tapete
+function obtenerMazoDeTapete(tapete) {
+    // Revisar los tapetes y devolver el mazo correcto según el tapete de origen o destino
+    if (tapete === tapete_inicial) {
+        return mazo_inicial; // Mazo de cartas del tapete inicial
+    } else if (tapete === tapete_sobrantes) {
+        return mazo_sobrantes; // Mazo de cartas del tapete sobrante
+    } else if (tapete === tapete_receptor1) {
+        return mazo_receptor1; // Mazo correspondiente al primer receptor
+    } else if (tapete === tapete_receptor2) {
+        return mazo_receptor2; // Mazo correspondiente al segundo receptor
+    } else if (tapete === tapete_receptor3) {
+        return mazo_receptor3; // Mazo correspondiente al tercer receptor
+    } else if (tapete === tapete_receptor4) {
+        return mazo_receptor4; // Mazo correspondiente al cuarto receptor
+    }
+    return []; // Si no es ninguno de los tapetes definidos, devolvemos un array vacío
+}
+
+
+function actualizarMazos(mazoOrigen, mazoDestino, carta) {
+    // Verificar que la carta es un objeto válido antes de intentar manipularla
+    if (!carta || !carta.id) {
+        console.error("La carta no es válida o no tiene un ID", carta);
+        return; // Salir si la carta no es válida
+    }
+
+    // Eliminar la carta del mazo de origen si está allí
+    let indice = mazoOrigen.indexOf(carta);
+    if (indice !== -1) {
+        mazoOrigen.splice(indice, 1); // Elimina la carta del mazo de origen
+    }
+
+    // Agregar la carta al mazo de destino
+    mazoDestino.push(carta); // Agrega la carta al mazo de destino
+
+    // Verificar si la carta fue correctamente movida
+    console.log("Carta movida", carta);
+}
+
+// Función para verificar si se puede colocar una carta en el receptor
+function puedeColocarCarta(valorUltima, colorUltima, valorActual, colorActual) {
+    // Orden esperado de los valores de cartas
+    let ordenValores = ["rey", "reina", "jota", "10", "9", "8", "7", "6", "5", "4", "3", "2", "as"];
+
+    // Obtener los índices de los valores de las cartas
+    let indiceUltima = ordenValores.indexOf(valorUltima);
+    let indiceActual = ordenValores.indexOf(valorActual);
+
+    // Verificar las condiciones:
+    // 1. El valor actual debe ser inmediatamente menor que el de la última carta.
+    // 2. El color debe ser diferente.
+    return indiceActual === indiceUltima + 1 && colorUltima !== colorActual;
+}
 
   // Función para actualizar los contadores de cartas de los tapetes
-function actualizarContadores(tapeteOrigen, tapeteDestino) {
-	// Restar 1 del contador del tapete de origen
+  function actualizarContadores(tapeteOrigen, tapeteDestino) {
 	let contadorOrigen = obtenerContador(tapeteOrigen);
-	set_contador(contadorOrigen, +contadorOrigen.innerHTML - 1);
+	if (contadorOrigen) {
+	  set_contador(contadorOrigen, +contadorOrigen.innerHTML - 1);
+	} else {
+	  console.error('No se pudo obtener el contador de origen');
+	}
 
-	// Sumar 1 al contador del tapete de destino
 	let contadorDestino = obtenerContador(tapeteDestino);
-	set_contador(contadorDestino, +contadorDestino.innerHTML + 1);
+	if (contadorDestino) {
+	  set_contador(contadorDestino, +contadorDestino.innerHTML + 1);
+	} else {
+	  console.error('No se pudo obtener el contador de destino');
+	}
   }
+
 
 // Función para obtener el contador de un tapete
 function obtenerContador(tapete) {
@@ -254,6 +376,54 @@ function eliminarSrcDeTapetes() {
 	  }
 	});
   }
+
+  function verificarYReiniciarTapeteInicial() {
+	// Obtener los valores de los contadores directamente desde los elementos del DOM
+	let contadorInicial = parseInt(cont_inicial.innerHTML); // Contador del tapete inicial
+	let contadorSobrantes = parseInt(cont_sobrantes.innerHTML); // Contador del tapete sobrante
+
+	// Verificar si el tapete inicial está vacío y si el tapete sobrante tiene cartas
+	if (contadorInicial === 0 && contadorSobrantes > 0) {
+	  // Barajar las cartas del tapete sobrante
+	  barajar(mazo_sobrantes);
+
+	  mazo_inicial= mazo_sobrantes;
+
+	  // Colocar las cartas barajadas en el tapete inicial
+	  cargar_tapete_inicial(mazo_inicial);
+
+
+	  // Limpiar el tapete sobrante
+	  mazo_sobrantes = [];
+	  cont_sobrantes.innerHTML= 0;
+	  return
+
+	  // Actualizar los contadores de los tapetes
+
+	}
+}
+
+function finJuego() {
+	let contadorInicial = parseInt(cont_inicial.innerHTML); // Contador del tapete inicial
+	let contadorSobrantes = parseInt(cont_sobrantes.innerHTML); // Contador del tapete sobrante
+	if (contadorInicial === 0 && contadorSobrantes === 0) {
+		let tiempo_final = detener_tiempo(); // Detiene el tiempo y obtiene los segundos transcurridos
+		let movimientos = parseInt(cont_movimientos.innerHTML); // Obtiene el número de movimientos
+
+		alert(`Fin del juego\nTiempo transcurrido: ${tiempo_final} segundos\nNúmero de movimientos: ${movimientos}`);
+	}
+}
+
+
+
+
+function detener_tiempo() {
+  if (temporizador) {
+    clearInterval(temporizador); // Detiene el temporizador
+  }
+  return segundos; // Devuelve el valor actual de la cuenta de segundos
+}
+
 
 // Función para ajustar el contador al valor especificado
 function set_contador(contador, valor) {

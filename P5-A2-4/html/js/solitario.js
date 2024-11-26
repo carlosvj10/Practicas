@@ -430,7 +430,7 @@ function finJuego() {
 	let contadorSobrantes = parseInt(cont_sobrantes.innerHTML); // Contador del tapete sobrante
 	if (contadorInicial === 0 && contadorSobrantes === 0) {
 		let tiempo_final = detener_tiempo(); // Detiene el tiempo y obtiene los segundos transcurridos
-		let movimientos = parseInt(cont_movimientos.innerHTML); // Obtiene el número de movimientos
+		let movimientos = parseInt(cont_movimientos.innerHTML); // Obtiene el número de movimientos realizados
 
 		alert(`Fin del juego\nTiempo transcurrido: ${tiempo_final-1} segundos\nNúmero de movimientos: ${movimientos}`);
 	}

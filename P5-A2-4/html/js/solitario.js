@@ -54,7 +54,7 @@ function comenzar_juego() {
 	let hijos = tapete_inicial.children; // Obtener todos los hijos del tapete
 	for (let i = hijos.length - 1; i >= 0; i--) {
 		if (!hijos[i].classList.contains("contador")) {
-		tapete_inicial.removeChild(hijos[i]); // Eliminar todo lo que no sea el contador
+		tapete_inicial.removeChild(hijos[i]); // Eliminar tod lo que no sea el contador
 		}
 	}
 
@@ -133,7 +133,7 @@ function cargar_tapete_inicial(mazo) {
     mazo[i].style.left = paso * i + "px";
     mazo[i].style.top = paso * i + "px";
     mazo[i].setAttribute("draggable", true); // Hacer la carta arrastrable
-    mazo[i].addEventListener('dragstart', (e) => iniciar_arrastre(e, mazo[i])); // Iniciar el arrastre
+    mazo[i].addEventListener('dragstart', (e) => iniciar_arrastre(e)); // Iniciar el arrastre
   }
   actualizarCartasArrastrables();
   set_contador(cont_inicial, mazo.length);
@@ -145,11 +145,12 @@ function actualizarCartasArrastrables() {
 	// Recorremos todas las cartas en el tapete inicial
 	for (let i = 0; i < cartas.length; i++) {
 	  let carta = cartas[i];
+      console.log('Actualizando carta', carta);
 
 	  // Si es la última carta, permitir que sea arrastrable
 	  if (i === cartas.length - 1) {
 		carta.setAttribute("draggable", true);
-		carta.addEventListener('dragstart', (e) => iniciar_arrastre(e, carta)); // Iniciar el arrastre
+		carta.addEventListener('dragstart', (e) => iniciar_arrastre(e)); // Iniciar el arrastre
 	  } else {
 		carta.setAttribute("draggable", false); // Deshabilitar el arrastre para otras cartas
 	  }
@@ -157,7 +158,8 @@ function actualizarCartasArrastrables() {
   }
 
 // Función de arrastre (inicia el proceso)
-function iniciar_arrastre(e, carta) {
+function iniciar_arrastre(e) {
+  const carta = e.target;
   e.dataTransfer.setData('text', carta.id);
 }
 
@@ -261,7 +263,8 @@ function soltar_en_receptor(e, tapete) {
     // Actualizar las cartas arrastrables
 	verificarYReiniciarTapeteInicial();
     actualizarCartasArrastrables();
-	finJuego();
+
+    setTimeout(finJuego, 10);
 }
 
 // Función para obtener el mazo correspondiente al tapete
@@ -371,8 +374,8 @@ function eliminarSrcDeTapetes() {
 	  let imgElements = tapete.getElementsByTagName("img");
 
 	  // Eliminar el atributo src de cada imagen
-	  for (let i = 0; i < imgElements.length; i++) {
-		imgElements[i].removeAttribute("src");
+	  for (const el of imgElements) {
+		el.remove();
 	  }
 	});
   }

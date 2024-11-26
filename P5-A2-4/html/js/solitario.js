@@ -54,7 +54,8 @@ function comenzar_juego() {
 	let hijos = tapete_inicial.children; // Obtener todos los hijos del tapete
 	for (let i = hijos.length - 1; i >= 0; i--) {
 		if (!hijos[i].classList.contains("contador")) {
-		tapete_inicial.removeChild(hijos[i]); // Eliminar tod lo que no sea el contador
+
+			tapete_inicial.removeChild(hijos[i]); // Eliminar tod lo que no sea el contador
 		}
 	}
 
@@ -232,16 +233,34 @@ function soltar_en_receptor(e, tapete) {
 
         // Verificar si la carta puede ser colocada
         if (!puedeColocarCarta(valorUltimaCarta, colorUltimaCarta, valorCarta, colorCarta)) {
+			// Si el tapete de origen es uno de los tapetes receptores, no se puede mover
+			if (tapeteOrigen === tapete_receptor1 || tapeteOrigen === tapete_receptor2 || tapeteOrigen === tapete_receptor3 || tapeteOrigen === tapete_receptor4) {
+				alert("No se puede mover una carta desde un tapete receptor.");
+				return;
+			}
+
             alert("Movimiento inválido. Las cartas deben estar en orden decreciente y alternando colores.");
             return;
         }
     } else {
         // Si no hay cartas en el receptor, la primera debe ser un Rey
         if (valorCarta !== "rey") {
+			// Si el tapete de origen es uno de los tapetes receptores, no se puede mover
+			if (tapeteOrigen === tapete_receptor1 || tapeteOrigen === tapete_receptor2 || tapeteOrigen === tapete_receptor3 || tapeteOrigen === tapete_receptor4) {
+				alert("No se puede mover una carta desde un tapete receptor.");
+				return;
+			}
+
             alert("Movimiento inválido. El receptor debe comenzar con un Rey.");
             return;
         }
     }
+
+	// Si el tapete de origen es uno de los tapetes receptores, no se puede mover
+	if (tapeteOrigen === tapete_receptor1 || tapeteOrigen === tapete_receptor2 || tapeteOrigen === tapete_receptor3 || tapeteOrigen === tapete_receptor4) {
+		alert("No se puede mover una carta desde un tapete receptor.");
+		return;
+	}
 
     // Ajustar posición de la carta en el receptor
     carta.style.position = "absolute";
@@ -370,13 +389,13 @@ function eliminarSrcDeTapetes() {
 
 	// Iterar sobre cada tapete
 	tapetes.forEach(tapete => {
-	  // Obtener todas las imágenes dentro del tapete
-	  let imgElements = tapete.getElementsByTagName("img");
+	  // Seleccionar todas las cartas del tapete actual y eliminarlas del DOM
+	  let cartas = tapete.querySelectorAll("img");
+	  // Eliminamos cada carta de las cartas del tapete
+	  cartas.forEach(carta => {
+		carta.remove();
+	  });
 
-	  // Eliminar el atributo src de cada imagen
-	  for (const el of imgElements) {
-		el.remove();
-	  }
 	});
   }
 
@@ -413,7 +432,7 @@ function finJuego() {
 		let tiempo_final = detener_tiempo(); // Detiene el tiempo y obtiene los segundos transcurridos
 		let movimientos = parseInt(cont_movimientos.innerHTML); // Obtiene el número de movimientos
 
-		alert(`Fin del juego\nTiempo transcurrido: ${tiempo_final} segundos\nNúmero de movimientos: ${movimientos}`);
+		alert(`Fin del juego\nTiempo transcurrido: ${tiempo_final-1} segundos\nNúmero de movimientos: ${movimientos}`);
 	}
 }
 

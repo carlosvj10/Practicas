@@ -4,8 +4,8 @@
 let palos = ["corazones", "picas", "rombos", "treboles"];
 
 // Array de número de cartas
-//let numeros = ["as", 2, 3, 4, 5, 6, 7, 8, 9, 10, "jota", "reina", "rey"];
-let numeros = [ "reina", "rey"];
+let numeros = ["as", 2, 3, 4, 5, 6, 7, 8, 9, 10, "jota", "reina", "rey"];
+//let numeros = [ "reina", "rey"];
 // Paso (top y left) en píxeles de una carta a la anterior en un mazo
 let paso = 3;
 
@@ -239,7 +239,7 @@ function soltar_en_receptor(e, tapete) {
 				return;
 			}
 
-            alert("Movimiento inválido. Las cartas deben estar en orden decreciente y alternando colores.");
+            alert("Movimiento inválido. Las cartas deben estar en orden decreciente y alternando colores y empezar por la K.");
             return;
         }
     } else {
@@ -251,8 +251,6 @@ function soltar_en_receptor(e, tapete) {
 				return;
 			}
 
-            alert("Movimiento inválido. El receptor debe comenzar con un Rey.");
-            return;
         }
     }
 
